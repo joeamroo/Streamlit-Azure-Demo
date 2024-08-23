@@ -7,8 +7,7 @@ from rag_pipeline import rag_pipeline_run
 st.title("RAG Pipeline Demo with Embedding")
 
 os.environ["AZURE_SEARCH_API_KEY"] = st.secrets["AZURE_SEARCH_API_KEY"]
-os.environ["AZURE_SEARCH_ENDPOINT"] = st.secrets["AZURE_SEARCH_ENDPOINT"]
-os.environ["AZURE_SEARCH_INDEX"] = st.secrets["AZURE_SEARCH_INDEX"]
+
 
 query = st.text_input("Enter your query:")
 

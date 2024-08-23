@@ -14,8 +14,7 @@ class AzureSearchRetriever:
         results = self.search_client.search(
             search_text=query,
             select=["content/pages/text"],  # Select only the relevant nested text field
-            filter=None,  # Add any filters if necessary
-            top=10,       # Adjust the number of results returned
+            top=10,  # Adjust the number of results returned
             include_total_count=True  # To include the total count of results
         )
         

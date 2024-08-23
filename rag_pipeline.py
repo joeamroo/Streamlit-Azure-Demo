@@ -1,11 +1,8 @@
 import os
 import logging
-import re
-import logging
 from azure_search_retriever import AzureSearchRetriever
 from haystack.components.generators import OpenAIGenerator
 from haystack_integrations.components.embedders.fastembed import FastembedTextEmbedder
-from haystack import component
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +19,7 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 # Initialize the FastembedTextEmbedder
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
 
-def rag_pipeline_run(query, document_stores, embedder):
+def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
@@ -34,7 +31,6 @@ def rag_pipeline_run(query, document_stores, embedder):
     formatted_documents = [text for text in retrieved_texts]
     
     # Here, a custom prompt template or more complex logic can be added to create a meaningful response.
-    # The following is a simplified example.
     answer = "Based on the retrieved documents, here's what I found:"
 
     return answer, formatted_documents, []

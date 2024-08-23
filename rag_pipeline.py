@@ -34,13 +34,10 @@ def rag_pipeline_run(query):
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
 
-    # Format the query as a chat message for OpenAI
-    chat_input = [{"role": "user", "content": query}]
-
-    # Generate the response using the OpenAI generator
-    response = generator.run(messages=chat_input)
+    # Generate the response using the OpenAIGenerator
+    response = generator.run(prompt=query)
 
     # Process the retrieved texts and generate the response
     formatted_documents = [text for text in retrieved_texts]
 
-    return response["choices"][0]["message"]["content"], formatted_documents, []
+    return response["choices"][0]["text"], formatted_documents, []

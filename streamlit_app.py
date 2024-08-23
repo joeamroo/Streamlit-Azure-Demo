@@ -14,7 +14,7 @@ query = st.text_input("Enter your query:")
 if query:
     try:
         # Run the RAG pipeline with the required arguments
-        answer, sources, images = rag_pipeline_run(query, embedder)
+        answer, sources, images = rag_pipeline_run(query)
 
         st.write("Expert Answer:")
         st.write(answer)
@@ -29,4 +29,3 @@ if query:
                 st.image(img)
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
-

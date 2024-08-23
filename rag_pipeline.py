@@ -23,8 +23,12 @@ embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=Fa
 # Warm up the embedder
 embedder.warm_up()
 
-# Initialize the OpenAIGenerator with temperature set to 0.2
-generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini", temperature=0.2)
+# Initialize the OpenAIGenerator with temperature only
+generator = OpenAIGenerator(
+    api_key=Secret.from_env_var("OPENAI_API_KEY"), 
+    model="gpt-4o-mini",
+    generation_kwargs={"temperature": 0.2}
+)
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
@@ -72,4 +76,3 @@ def rag_pipeline_run(query):
 
     # Return only the answer to the query, not the documents
     return answer, [], []
-

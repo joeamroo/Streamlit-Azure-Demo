@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # Azure Search configuration
 search_service_endpoint = "https://dwlouisaicognitive.search.windows.net"
 index_name = "testindex"
-api_key = "your_api_key_here"
+api_key = os.environ["AZURE_SEARCH_API_KEY"]
 
 # Initialize the Azure Search Retriever
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)

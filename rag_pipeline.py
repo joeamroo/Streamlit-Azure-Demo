@@ -2,12 +2,23 @@ import logging
 from haystack.components.generators import OpenAIGenerator
 from haystack.utils import Secret
 from haystack_integrations.components.embedders.fastembed import FastembedTextEmbedder
+from azure_search_retriever import AzureSearchRetriever
 
 # Initialize logging
 logger = logging.getLogger(__name__)
 
+# Azure Search configuration
+search_service_endpoint = "https://dwlouisaicognitive.search.windows.net"
+index_name = "testindex"
+api_key = os.getenv("AZURE_SEARCH_API_KEY")
+
+# Initialize the Azure Search Retriever
+retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
+
 # Initialize the FastembedTextEmbedder
-embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
+
+# Warm up the embedder
 embedder.warm_up()
 
 # Initialize the OpenAIGenerator with the appropriate temperature
@@ -21,9 +32,24 @@ def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
-    # Collect figures and images (assuming these are stored in the Azure index under specific fields)
-    figures_and_images = [f"{doc.meta.get('figure_name', '')}: {doc.content}" for doc in retrieved_texts if 'figure' in doc.meta]
-    
+    # Collect and structure figures, images, and URLs
+    figures_and_images = []
+    sources = []
+    for doc in retrieved_texts:
+        doc_name = doc.meta.get('document_name', 'Unknown Document')
+        doc_url = doc.meta.get('url', '#')
+        for page in doc.content.get('pages', []):
+            text = page.get('text', '')
+            figures_and_images.extend(page.get('figures', []))
+            for table in page.get('tables', []):
+                figures_and_images.append(table['tbl_img_name'])
+
+            sources.append({
+                "document_type": "PDF",
+                "title": doc_name,
+                "link": doc_url
+            })
+
     # Generate embeddings for the query
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
@@ -54,19 +80,5 @@ def rag_pipeline_run(query):
 
     # Consolidate the answer and meta information
     answer = response.get("replies", [])[0] if response.get("replies") else "No response generated."
-    
-    # Extracting sources or additional meta information if needed
-    sources = [
-        {
-            "document_type": doc.meta.get('document_type', 'Unknown'),
-            "title": doc.meta.get('title', 'Untitled'),
-            "link": doc.meta.get('link', '#')
-        }
-        for doc in retrieved_texts
-    ]
-
-    # If there are images or figures, add them to the sources
-    if figures_and_images:
-        sources.append({"figure_or_image": figures_and_images})
 
     return answer, sources, figures_and_images

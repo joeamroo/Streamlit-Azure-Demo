@@ -1,14 +1,13 @@
 import streamlit as st
 from rag_pipeline import rag_pipeline_run, initialize_document_stores, FastembedTextEmbedder
 
-
 # Streamlit app UI
 st.title("RAG Pipeline Demo")
 
 query = st.text_input("Enter your query:")
 
 if query:
-    # Run the RAG pipeline with the required arguments
+    # Run the RAG pipeline
     answer, sources, images = rag_pipeline_run(query)
 
     st.write("Expert Answer:")

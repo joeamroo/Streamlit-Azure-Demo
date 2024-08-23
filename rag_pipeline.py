@@ -1,13 +1,11 @@
 import os
 import logging
 import re
-from haystack import Pipeline
+import logging
 from azure_search_retriever import AzureSearchRetriever
-from haystack.components import EmbeddingRetriever, TextConverter, PreProcessor
-from haystack.nodes import FARMReader
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-from haystack.utils import clean_wiki_text
+from haystack.components.generators import OpenAIGenerator
+from haystack_integrations.components.embedders.fastembed import FastembedTextEmbedder
+from haystack import component
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -21,21 +19,22 @@ api_key = "your_api_key_here"
 # Initialize the Azure Search Retriever
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 
-# Initialize the RAG pipeline with a retriever
-def rag_pipeline_run(query):
+# Initialize the FastembedTextEmbedder
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
+
+def rag_pipeline_run(query, document_stores, embedder):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
-    # Process and format the retrieved texts as needed
-    formatted_documents = [clean_wiki_text(text) for text in retrieved_texts]
+    # Generate embeddings for the query
+    embedding_result = embedder.run(text=query)
+    query_embedding = embedding_result["embedding"]
 
-    # Initialize the pipeline (dummy setup, replace with actual components)
-    # For example, you might want to use a reader and a generator here
-    pipeline = Pipeline()
+    # Process the retrieved texts and generate the response
+    formatted_documents = [text for text in retrieved_texts]
     
-    # Process the query and retrieved documents through the pipeline
-    # Here you might want to include the text retrieval and generation steps
-    # This is a placeholder example
-    answer = "Generated answer based on the retrieved texts"
-    
+    # Here, a custom prompt template or more complex logic can be added to create a meaningful response.
+    # The following is a simplified example.
+    answer = "Based on the retrieved documents, here's what I found:"
+
     return answer, formatted_documents, []

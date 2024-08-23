@@ -6,6 +6,7 @@ from haystack_integrations.components.embedders.fastembed import FastembedTextEm
 from azure_search_retriever import AzureSearchRetriever
 
 # Initialize logging
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Azure Search configuration
@@ -31,40 +32,22 @@ generator = OpenAIGenerator(
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
-    retrieved_documents = retriever.retrieve(query)
+    retrieved_texts = retriever.retrieve(query)
     
-    # Collect and structure figures, images, and URLs
-    figures_and_images = []
-    sources = []
-    for doc in retrieved_documents:
-        for page in doc["content"]["pages"]:
-            figures_and_images.extend(page.get("figures", []))
-            for table in page.get("tables", []):
-                figures_and_images.append(table["tbl_img_name"])
+    # If no documents are retrieved, return a message indicating that
+    if not retrieved_texts:
+        return "No relevant documents found.", [], []
 
-            sources.append({
-                "document_type": "PDF",
-                "title": page.get("document_name", "Unknown Document"),
-                "link": page.get("url", "#")
-            })
-
-    # Generate embeddings for the query
-    embedding_result = embedder.run(text=query)
-    query_embedding = embedding_result["embedding"]
-    
     # Construct the prompt for GPT-4
     prompt = f"""
-    You are an expert in Profrac Procedures. Your task is to answer questions based on the provided documents, including any figures or images.
+    You are an expert in Profrac Procedures. Your task is to answer questions based on the provided documents.
 
-    The documents contain technical content with references to figures and images. These may include important diagrams, charts, or visual information, or tables related to the topic. Use these as necessary to provide a complete answer.
+    The documents contain technical content. Use the provided information to deliver a precise and accurate response.
 
-    When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic. Always mention the documents you sourced the answers from, and provide a link to them from the metadata if possible.
+    When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic. Always mention the documents you sourced the answers from, and provide a link to them if possible.
 
     Retrieved Documents:
-    {retrieved_documents}
-
-    Figures and Images:
-    {figures_and_images}
+    {"\n".join(retrieved_texts)}
 
     Question: {query}
     Expert Answer:
@@ -79,4 +62,4 @@ def rag_pipeline_run(query):
     # Consolidate the answer and meta information
     answer = response.get("replies", [])[0] if response.get("replies") else "No response generated."
 
-    return answer, sources, figures_and_images
+    return answer, [], []

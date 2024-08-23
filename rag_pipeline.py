@@ -16,11 +16,7 @@ api_key = os.environ["AZURE_SEARCH_API_KEY"]
 # Initialize the Azure Search Retriever
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 
-# Initialize the FastembedTextEmbedder
-embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
-embedder.warm_up()
-
-def rag_pipeline_run(query, document_stores, embedder):
+def rag_pipeline_run(query, embedder):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     

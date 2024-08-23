@@ -20,6 +20,9 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 # Initialize the FastembedTextEmbedder with progress_bar set to False
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
 
+embedder.warm_up()
+
+
 # Initialize the OpenAIGenerator
 generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini")
 

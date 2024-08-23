@@ -18,8 +18,9 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 
 # Initialize the FastembedTextEmbedder
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
+embedder.warm_up()
 
-def rag_pipeline_run(query):
+def rag_pipeline_run(query, document_stores, embedder):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     

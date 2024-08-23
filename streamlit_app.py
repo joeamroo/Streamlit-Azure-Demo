@@ -1,8 +1,10 @@
-import sys
-import os
-import logging
 import streamlit as st
 from rag_pipeline import rag_pipeline_run, initialize_document_stores, FastembedTextEmbedder
+
+# Initialize Haystack components
+document_stores = initialize_document_stores()
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
+embedder.warm_up()
 
 # Streamlit app UI
 st.title("RAG Pipeline Demo")
@@ -10,8 +12,8 @@ st.title("RAG Pipeline Demo")
 query = st.text_input("Enter your query:")
 
 if query:
-    # Run the RAG pipeline
-    answer, sources, images = rag_pipeline_run(query)
+    # Run the RAG pipeline with the required arguments
+    answer, sources, images = rag_pipeline_run(query, document_stores, embedder)
 
     st.write("Expert Answer:")
     st.write(answer)

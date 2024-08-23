@@ -29,11 +29,14 @@ def rag_pipeline_run(query, embedder):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
-    # Generate embeddings for the query with tqdm disabled
+    # Generate embeddings for the query (you can use this for other purposes)
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
 
-    # Generate a response using the OpenAI API
-    response = generator.run([query_embedding])
+    # Generate a response using the OpenAI API with the original query
+    response = generator.run([query])
 
-    return response, retrieved_texts, []
+    # Process the response to return just the text
+    answer = response['choices'][0]['message']['content']
+
+    return answer, retrieved_texts, []

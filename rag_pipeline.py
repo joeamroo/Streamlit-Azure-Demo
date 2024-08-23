@@ -18,7 +18,7 @@ api_key = os.environ["AZURE_SEARCH_API_KEY"]
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 
 # Initialize the FastembedTextEmbedder with tqdm disabled
-embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
 embedder.warm_up()
 
 # Initialize the OpenAIGenerator with the API key wrapped in Secret

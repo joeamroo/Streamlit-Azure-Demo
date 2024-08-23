@@ -19,7 +19,6 @@ if query:
         st.write("Expert Answer:")
         st.write(answer)
 
-        st.write("Sources:")
         for source in sources:
             st.write(f"- {source}")
 

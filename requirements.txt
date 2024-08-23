@@ -1,5 +1,5 @@
 streamlit
-haystack
+haystack-ai
 azure-search-documents
 tiktoken
 openai

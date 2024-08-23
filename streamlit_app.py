@@ -24,4 +24,5 @@ if query:
 
     if images:
         st.write("Relevant Images:")
-        for img in images, st.image(img)
+        for img in images:
+            st.image(img)

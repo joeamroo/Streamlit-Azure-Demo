@@ -31,24 +31,21 @@ generator = OpenAIGenerator(
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
-    retrieved_texts = retriever.retrieve(query)
+    retrieved_documents = retriever.retrieve(query)
     
     # Collect and structure figures, images, and URLs
     figures_and_images = []
     sources = []
-    for doc in retrieved_texts:
-        doc_name = doc.meta.get('document_name', 'Unknown Document')
-        doc_url = doc.meta.get('url', '#')
-        for page in doc.content.get('pages', []):
-            text = page.get('text', '')
-            figures_and_images.extend(page.get('figures', []))
-            for table in page.get('tables', []):
-                figures_and_images.append(table['tbl_img_name'])
+    for doc in retrieved_documents:
+        for page in doc["content"]["pages"]:
+            figures_and_images.extend(page.get("figures", []))
+            for table in page.get("tables", []):
+                figures_and_images.append(table["tbl_img_name"])
 
             sources.append({
                 "document_type": "PDF",
-                "title": doc_name,
-                "link": doc_url
+                "title": page.get("document_name", "Unknown Document"),
+                "link": page.get("url", "#")
             })
 
     # Generate embeddings for the query
@@ -64,7 +61,7 @@ def rag_pipeline_run(query):
     When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic. Always mention the documents you sourced the answers from, and provide a link to them from the metadata if possible.
 
     Retrieved Documents:
-    {retrieved_texts}
+    {retrieved_documents}
 
     Figures and Images:
     {figures_and_images}

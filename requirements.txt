@@ -1,0 +1,9 @@
+streamlit
+haystack
+azure-search-documents
+tiktoken
+openai
+qdrant-client
+fastembed
+requests
+Pillow

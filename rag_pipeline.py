@@ -20,8 +20,8 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 # Initialize the FastembedTextEmbedder with progress_bar set to False
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
 
+# Warm up the embedder
 embedder.warm_up()
-
 
 # Initialize the OpenAIGenerator
 generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini")
@@ -34,8 +34,11 @@ def rag_pipeline_run(query):
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
 
+    # Format the query as a chat message for OpenAI
+    chat_input = [{"role": "user", "content": query}]
+
     # Generate the response using the OpenAI generator
-    response = generator.run([query])
+    response = generator.run(messages=chat_input)
 
     # Process the retrieved texts and generate the response
     formatted_documents = [text for text in retrieved_texts]

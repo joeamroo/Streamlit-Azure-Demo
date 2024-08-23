@@ -46,7 +46,7 @@ def rag_pipeline_run(query):
 
     # Generate the prompt for GPT-4
     prompt = f"""
-    You are an expert in Oil & Gas and the Energy Industry. Your task is to answer questions based on the provided documents, including any figures or images.
+    You are an expert in Profrac Procedures. Your task is to answer questions based on the provided documents, including any figures or images.
 
     The documents contain technical content with references to figures and images. These may include important diagrams, charts, or visual information related to the topic. Use these as necessary to provide a complete answer.
 

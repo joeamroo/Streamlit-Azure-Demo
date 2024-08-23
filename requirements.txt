@@ -13,4 +13,3 @@ fastembed-haystack
 fastembed
 Pillow
 requests
-haystack.utils

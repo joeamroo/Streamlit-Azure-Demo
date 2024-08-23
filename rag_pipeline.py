@@ -35,9 +35,19 @@ def rag_pipeline_run(query):
     query_embedding = embedding_result["embedding"]
 
     # Generate the response using the OpenAIGenerator
-    response = generator.run(prompt=query)
+    try:
+        response = generator.run(prompt=query)
+        # Print the raw response to inspect its structure
+        print("Raw OpenAI Response:", response)
+        logger.info(f"Raw OpenAI Response: {response}")
+        
+        answer = response["choices"][0]["text"] if "choices" in response else "No response generated."
+    except Exception as e:
+        logger.error(f"Error generating response from OpenAI: {str(e)}")
+        answer = "An error occurred while generating the response."
 
-    # Process the retrieved texts and generate the response
+    # Process the retrieved texts
     formatted_documents = [text for text in retrieved_texts]
 
-    return response["choices"][0]["text"], formatted_documents, []
+    return answer, formatted_documents, []
+

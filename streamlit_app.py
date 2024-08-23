@@ -1,13 +1,13 @@
 import os
 import streamlit as st
-from rag_pipeline import rag_pipeline_run, embedder  # Ensure proper import of embedder and generator
-
-# Streamlit app UI
-st.title("RAG Pipeline Demo with Embedding")
+from rag_pipeline import rag_pipeline_run, embedder
 
 # Set environment variables for Azure Search and OpenAI API keys
 os.environ["AZURE_SEARCH_API_KEY"] = st.secrets["AZURE_SEARCH_API_KEY"]
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+
+# Streamlit app UI
+st.title("RAG Pipeline Demo with Embedding")
 
 query = st.text_input("Enter your query:")
 

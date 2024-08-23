@@ -2,14 +2,17 @@ import sys
 import os
 import logging
 import streamlit as st
+
+
+# Add the home directory to the Python path (if needed)
+sys.path.append(os.path.expanduser('~'))
+
+
 from rag_pipeline import rag_pipeline_run, initialize_document_stores, FastembedTextEmbedder
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Add the home directory to the Python path (if needed)
-sys.path.append(os.path.expanduser('~'))
 
 # Initialize Haystack components
 try:

@@ -48,9 +48,9 @@ def rag_pipeline_run(query):
     prompt = f"""
     You are an expert in Profrac Procedures. Your task is to answer questions based on the provided documents, including any figures or images.
 
-    The documents contain technical content with references to figures and images. These may include important diagrams, charts, or visual information related to the topic. Use these as necessary to provide a complete answer.
+    The documents contain technical content with references to figures and images. These may include important diagrams, charts, or visual information, or tables related to the topic. Use these as necessary to provide a complete answer.
 
-    When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic.
+    When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic. Always mentioned the Documents you sourced the Answers from, and provide a link to them from the metadata if possible.
 
     Retrieved Documents:
     {retrieved_texts}

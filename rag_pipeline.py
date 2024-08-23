@@ -23,20 +23,44 @@ embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=Fa
 # Warm up the embedder
 embedder.warm_up()
 
-# Initialize the OpenAIGenerator
-generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini")
+# Initialize the OpenAIGenerator with temperature set to 0.2
+generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini", temperature=0.2)
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
+    # Extract figures and images from the retrieved documents
+    figures_and_images = []
+    for doc in retrieved_texts:
+        if "<figure>" in doc or "<img" in doc:
+            figures_and_images.append(doc)
+
     # Generate embeddings for the query
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
 
+    # Generate the prompt for GPT-4
+    prompt = f"""
+    You are an expert in Oil & Gas and the Energy Industry. Your task is to answer questions based on the provided documents, including any figures or images.
+
+    The documents contain technical content with references to figures and images. These may include important diagrams, charts, or visual information related to the topic. Use these as necessary to provide a complete answer.
+
+    When discussing technical concepts, briefly explain them in a way that would be understandable to someone with general knowledge of the topic.
+
+    Retrieved Documents:
+    {retrieved_texts}
+
+    Figures and Images:
+    {figures_and_images}
+
+    Question: {query}
+    Expert Answer:
+    """
+
     # Generate the response using the OpenAIGenerator
     try:
-        response = generator.run(prompt=query)
+        response = generator.run(prompt=prompt)
         # Print the raw response to inspect its structure
         print("Raw OpenAI Response:", response)
         logger.info(f"Raw OpenAI Response: {response}")
@@ -46,8 +70,6 @@ def rag_pipeline_run(query):
         logger.error(f"Error generating response from OpenAI: {str(e)}")
         answer = "An error occurred while generating the response."
 
-    # Process the retrieved texts
-    formatted_documents = [text for text in retrieved_texts]
-
-    return answer, formatted_documents, []
+    # Return only the answer to the query, not the documents
+    return answer, [], []
 

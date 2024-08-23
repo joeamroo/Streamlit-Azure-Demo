@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # Azure Search configuration
 search_service_endpoint = "https://dwlouisaicognitive.search.windows.net"
 index_name = "testindex"
-api_key = os.environ.get("AZURE_SEARCH_API_KEY")
+api_key = Secret.from_env_var("AZURE_SEARCH_API_KEY").resolve_value()
 
 # Initialize the Azure Search Retriever
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
@@ -21,8 +21,8 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
 embedder.warm_up()
 
-# Initialize the OpenAIGenerator with the API key
-generator = OpenAIGenerator(api_key=os.environ["OPENAI_API_KEY"], model="gpt-4o-mini")
+# Initialize the OpenAIGenerator with the API key using Secret.from_env_var
+generator = OpenAIGenerator(api_key=Secret.from_env_var("OPENAI_API_KEY"), model="gpt-4o-mini")
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
@@ -39,4 +39,3 @@ def rag_pipeline_run(query):
     answer = response['choices'][0]['message']['content']
 
     return answer, retrieved_texts, []
-

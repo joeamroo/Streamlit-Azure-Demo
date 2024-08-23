@@ -7,7 +7,7 @@ from haystack_integrations.components.embedders.fastembed import FastembedTextEm
 logger = logging.getLogger(__name__)
 
 # Initialize the FastembedTextEmbedder
-embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", disable_tqdm=True, progress_bar=False)
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
 embedder.warm_up()
 
 # Initialize the OpenAIGenerator with the appropriate temperature

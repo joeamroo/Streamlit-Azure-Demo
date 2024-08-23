@@ -5,15 +5,9 @@ tiktoken
 openai
 qdrant-client
 fastembed
-requests
-Pillow
 streamlit
-haystack-ai
-tiktoken
 fastapi
-qdrant-client
 fastembed
-openai
 qdrant-haystack
 fastembed-haystack
 fastembed

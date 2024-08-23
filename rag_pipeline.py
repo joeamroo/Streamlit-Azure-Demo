@@ -69,7 +69,7 @@ def rag_pipeline_run(query):
         print("Raw OpenAI Response:", response)
         logger.info(f"Raw OpenAI Response: {response}")
         
-        answer = response["choices"][0]["text"] if "choices" in response else "No response generated."
+        answer = response["replies"][0]
     except Exception as e:
         logger.error(f"Error generating response from OpenAI: {str(e)}")
         answer = "An error occurred while generating the response."

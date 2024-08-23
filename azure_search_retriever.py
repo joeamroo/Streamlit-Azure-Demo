@@ -1,5 +1,4 @@
-from azure.search.documents import SearchClient
-from azure.search.documents.models import SearchOptions
+from azure.search.documents import SearchClient, SearchOptions
 from haystack import component
 from haystack.dataclasses import Document
 

@@ -1,3 +1,4 @@
+import os
 import logging
 from haystack.components.generators import OpenAIGenerator
 from haystack.utils import Secret

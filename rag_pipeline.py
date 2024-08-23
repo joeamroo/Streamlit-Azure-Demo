@@ -1,30 +1,38 @@
 import os
-from azure.search.documents import SearchClient
-from azure.core.credentials import AzureKeyCredential
+import logging
+from azure_search_retriever import AzureSearchRetriever
+from haystack.components.generators import OpenAIGenerator
 
-class AzureSearchRetriever:
-    def __init__(self, search_service_endpoint, index_name, api_key):
-        self.search_client = SearchClient(
-            endpoint=search_service_endpoint,
-            index_name=index_name,
-            credential=AzureKeyCredential(api_key)
-        )
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    def retrieve(self, query):
-        # Perform the search using the search text
-        results = self.search_client.search(
-            search_text=query,
-            select=["content/pages/text"],  # Select only the relevant nested text field
-            top=10,  # Adjust the number of results returned
-            include_total_count=True  # To include the total count of results
-        )
-        
-        # Flatten the text from the nested structure
-        flattened_results = []
-        for result in results:
-            if 'content' in result and 'pages' in result['content']:
-                for page in result['content']['pages']:
-                    if 'text' in page:
-                        flattened_results.append(page['text'])
-        
-        return flattened_results
+# Azure Search configuration
+search_service_endpoint = "https://dwlouisaicognitive.search.windows.net"
+index_name = "testindex"
+api_key = os.environ["AZURE_SEARCH_API_KEY"]
+
+# Initialize the Azure Search Retriever
+retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
+
+# Initialize the OpenAI Generator
+generator = OpenAIGenerator(api_key=os.environ["OPENAI_API_KEY"], model="gpt-4o-mini")
+
+def rag_pipeline_run(query, embedder):
+    # Retrieve documents using Azure Search
+    retrieved_texts = retriever.retrieve(query)
+    
+    # Combine retrieved texts into a single context
+    context = "\n".join(retrieved_texts)
+
+    # Generate embeddings for the query (if needed for further processing)
+    embedding_result = embedder.run(text=query)
+    query_embedding = embedding_result["embedding"]
+
+    # Generate a response from OpenAI using the context
+    prompt = f"Based on the following context, answer the query:\n\nContext:\n{context}\n\nQuery: {query}\n\nAnswer:"
+    response = generator.run(prompt=prompt)
+    
+    # Return only the generated answer
+    answer = response["replies"][0]
+    return answer

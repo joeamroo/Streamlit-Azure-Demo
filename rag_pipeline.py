@@ -60,6 +60,6 @@ def rag_pipeline_run(query):
     response = generator.run(prompt=prompt)
 
     # Consolidate the answer and meta information
-    answer = response.get("replies", [])[0] if response.get("replies") else "No response generated."
-
+    answer = response["replies"][0]
+    
     return answer, [], []

@@ -3,6 +3,7 @@ import logging
 from azure_search_retriever import AzureSearchRetriever
 from haystack.components.generators import OpenAIGenerator
 from haystack_integrations.components.embedders.fastembed import FastembedTextEmbedder
+from haystack.utils import Secret  # Import Secret from Haystack
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -19,8 +20,8 @@ retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 # Initialize the FastembedTextEmbedder
 embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
 
-# Initialize the OpenAIGenerator with the API key directly
-generator = OpenAIGenerator(api_key=os.environ["OPENAI_API_KEY"], model="gpt-4o-mini")
+# Initialize the OpenAIGenerator with the API key wrapped in Secret
+generator = OpenAIGenerator(api_key=Secret(os.environ["OPENAI_API_KEY"]), model="gpt-4o-mini")
 
 def rag_pipeline_run(query):
     # Retrieve documents using Azure Search

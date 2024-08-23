@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from rag_pipeline import rag_pipeline_run, embedder
 
-# Set environment variables for Azure Search and OpenAI API keys
+# Set environment variables for the API keys
 os.environ["AZURE_SEARCH_API_KEY"] = st.secrets["AZURE_SEARCH_API_KEY"]
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
@@ -13,7 +13,7 @@ query = st.text_input("Enter your query:")
 
 if query:
     # Run the RAG pipeline with the required arguments
-    answer, sources, images = rag_pipeline_run(query, embedder)
+    answer, sources, images = rag_pipeline_run(query)
 
     st.write("Expert Answer:")
     st.write(answer)

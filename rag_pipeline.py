@@ -12,31 +12,31 @@ logger = logging.getLogger(__name__)
 # Azure Search configuration
 search_service_endpoint = "https://dwlouisaicognitive.search.windows.net"
 index_name = "testindex"
-api_key = os.environ["AZURE_SEARCH_API_KEY"]
+api_key = os.environ.get("AZURE_SEARCH_API_KEY")
 
 # Initialize the Azure Search Retriever
 retriever = AzureSearchRetriever(search_service_endpoint, index_name, api_key)
 
-# Initialize the FastembedTextEmbedder with tqdm disabled
-embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5", progress_bar=False)
+# Initialize the FastembedTextEmbedder
+embedder = FastembedTextEmbedder(model="BAAI/bge-small-en-v1.5")
 embedder.warm_up()
 
-# Initialize the OpenAIGenerator with the API key wrapped in Secret
-openai_api_key = os.environ["OPENAI_API_KEY"]
-generator = OpenAIGenerator(api_key=Secret.from_token(openai_api_key), model="gpt-4o-mini")
+# Initialize the OpenAIGenerator with the API key
+generator = OpenAIGenerator(api_key=os.environ["OPENAI_API_KEY"], model="gpt-4o-mini")
 
-def rag_pipeline_run(query, embedder):
+def rag_pipeline_run(query):
     # Retrieve documents using Azure Search
     retrieved_texts = retriever.retrieve(query)
     
-    # Generate embeddings for the query (you can use this for other purposes)
+    # Generate embeddings for the query
     embedding_result = embedder.run(text=query)
     query_embedding = embedding_result["embedding"]
 
     # Generate a response using the OpenAI API with the original query
     response = generator.run([query])
 
-    # Process the response to return just the text
+    # Extract the answer from the OpenAI response
     answer = response['choices'][0]['message']['content']
 
     return answer, retrieved_texts, []
+

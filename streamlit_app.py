@@ -1,5 +1,5 @@
 import streamlit as st
-from rag_pipeline import rag_pipeline_run, initialize_document_stores, FastembedTextEmbedder
+from rag_pipeline import rag_pipeline_run, initialize_document_stores
 
 # Set up environment variables for Azure Search and OpenAI keys
 os.environ["AZURE_SEARCH_API_KEY"] = st.secrets["AZURE_SEARCH_API_KEY"]
